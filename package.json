@@ -1,0 +1,131 @@
+{
+  "name": "codementor-ai",
+  "displayName": "Code Mentor AI",
+  "description": "Provides customized feedback related to variable use in programs based on a question.",
+  "publisher": "acme-jg",
+  "version": "0.5.1",
+  "engines": {
+    "vscode": "^1.94.0"
+  },
+  "license": "MIT",
+  "categories": [
+    "Education"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jaapgeurts/codementor-ai.git"
+  },
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "codementor-ai",
+      "properties": {
+        "codementor-ai.systemInstructions": {
+          "type": "string",
+          "default": "{context}.\n\n\nYou are an academic teacher of first year bachelor students of introduction to programming. Use the knowledge in the prompt to answer questions about variables in computer program code. Give short and concise answers. NEVER give solutions or examples.",
+          "description": "Top level instructions for feedback."
+        },
+        "codementor-ai.promptOutcome": {
+          "type": "string",
+          "default": "Limit your response to 150 tokens per learning goal. Review the program code against the learning goals in the prompt. Compare each learning goal and state whether each learning outcome is demonstrated in the code. Give a remark and a detailed elaborate explanation why a learning goal was met or not met. NEVER give solutions or examples. Format remark response as a JSON object. It is not necessary to wrap your response in triple backticks. Here is an example of what your response should look like: { \"ismet\": true, \"remark\": \"The program code demonstrates good variable naming.\", \"explanation\": \"The names of the variables indicate their purpose or role which improves maintainability.\" }{ \"ismet\": false, \"remark\": \"The program code does not demonstrate using a constant variable to store a value.\", \"explanation\": \"Some variables can be made constant because they never change thereby improving maintainability.\"}",
+          "description": "Prompt to send when reviewing learning outcomes."
+        },
+        "codementor-ai.promptImprove": {
+          "type": "string",
+          "default": "Limit your response to 300 tokens. Review the following program code based only on the knowledge in the prompt and give suggestion for improvement. DO NOT review mistakes that are NOT in the prompt. NEVER give suggestions \"NOT\" in the prompt. Give short and concise answers. Avoid repeating yourself, instead give praise. NEVER give solutions or examples. Format each suggestion as a JSON object. Do NOT wrap your response in triple backticks. Here is an example of what your response should look like: { \"remark\": \"You should use a for loop instead of a while loop. A for loop is more concise and easier to read.\" }{ \"remark\": \"You should use a const variable instead of a let variable. A const variable cannot be reassigned.\" }.",
+          "description": "Prompt to send when asking for hints / suggestions."
+        },
+        "codementor-ai.promptUnderstand": {
+          "type": "string",
+          "default": "Limit your response to 100 tokens per question-answer pair. Review the following program code and ask me why, what and how questions about the program code to test my understanding of the learning outcomes of variables. Base the questions on the knowledge in the prompt DO NOT ask questions that are NOT in the prompt. Ask short and concise questions. Format each suggestion as a JSON object. Do NOT wrap your response in triple backticks. Here is an example of what your response should look like: { \"question\": \"Why did you create a variable at the global scope?\", \"answer\": \"Because it must be accessed from two functions.\" }{ \"question\": \"What is the difference between a normal and a const variable?\", \"answer\": \"A normal variable can be reassigned, while a const variable cannot be reassigned.\" }.",
+          "description": "Prompt to generate questions to test understanding."
+        },
+        "codementor-ai.promptCustomQuestion": {
+          "type": "string",
+          "default": "",
+          "description": "Prompt used for asking custom questions."
+        },
+        "codementor-ai.promptAnnotation": {
+          "type": "string",
+          "default": "Your job is to evaluate variable usage on a block of code that the user gives you and then annotate only lines related to variables that could be improved with a brief remark and the reason why you are making that remark. Draw your remarks only from the PCK knowledge in the prompt. Indicate for each remark if it's positive or not. If remarks do not align with the PCK of variables then skip remarks or give positive remarks. Format each suggestion as a single JSON object. Do NOT wrap your response in triple backticks. Here is an example of what your response should look like: { \"line\": 1, \"positive\": false,  \"remark\": \"I think you should use a for loop instead of a while loop. A for loop is more concise and easier to read.\" }{ \"line\": 12, \"positive\": true, \"remark\": \"Your use of a const variable is a good choice for this variable!\" }.",
+          "description": "Prompt used requesting annotations."
+        },
+        "codementor-ai.promptReviewAgain": {
+          "type": "string",
+          "default": "Review my code again keeping the following feedback in mind. Did I improve? If so, how? If not, why not? When done provide a next step hint. Format each remark as a JSON object. It is not necessary to wrap your response in triple backticks. Here is an example of what your response should look like: { \"improved\": true, \"remark\": \"The program code demonstrates good variable naming conventions.\" }{ \"improved\": false, \"remark\": \"The program code does not demonstrate the learning goal of using a const variable to store a value.\" }.",
+          "description": "Prompt used for asking feedback again."
+        },
+        "codementor-ai.promptDetail": {
+          "type": "string",
+          "default": "Please give me more detailed information about the feedback remark in the context of my program. Additionally explain why this learning goal is important. ",
+          "description": "Prompt used for more info on feedback."
+        },
+        "codementor-ai.promptMeaning": {
+          "type": "string",
+          "default": "Please explain the meaning of the remark in the context of the program and the learning goals.",
+          "description": "Prompt used for extra meaning on feedback."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codementor-ai",
+          "title": "CodeMentor AI",
+          "icon": "resources/feedback-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "codementor-ai": [
+        {
+          "id": "codementor-ai-interaction",
+          "type": "webview",
+          "name": "CodeMentor AI"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "codementor-ai.annotate",
+        "title": "CodeMentor AI: Request LLM Annotations"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./ && copyfiles -u 1 \"src/resources/**/*\" out && copyfiles -u 1 \"src/media/**/*\" out",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "lint": "eslint src -c .eslintrc.json",
+    "test": "vscode-test",
+    "publish": "npm run compile && vsce package && vsce publish",
+    "package linux": "vsce package --target linux-x64",
+    "package win64": "vsce package --target win32-x64"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.94.0",
+    "@typescript-eslint/eslint-plugin": "^7.7.1",
+    "@typescript-eslint/parser": "^7.7.1",
+    "@vscode/test-cli": "^0.0.8",
+    "@vscode/test-electron": "^2.3.9",
+    "copyfiles": "^2.4.1",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@langchain/anthropic": "^0.3.11",
+    "@langchain/community": "^0.3.23",
+    "@langchain/core": "^0.3.27",
+    "@langchain/openai": "^0.3.16",
+    "axios": "^1.7.7",
+    "faiss-node": "^0.5.1",
+    "langchain": "^0.3.7",
+    "pickleparser": "^0.2.1",
+    "showdown": "^2.1.0",
+    "zod": "^3.23.8"
+  }
+}

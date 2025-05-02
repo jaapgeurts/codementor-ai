@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CodeMentor AI interaction window</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <style>
+      body {
+        margin: 1em;
+      }
+      .vscode-light {
+        background-color: white;
+        color: black;
+      }
+      .vscode-dark {
+        background-color: #1d1d1d;
+        color: #d3d3d3;
+      }
+      .vscode-high-contrast {
+      }
+      .positive {
+        color: #009500;
+      }
+      .negative {
+        color: #e19600;
+      }
+      .response-output > li {
+        margin-bottom: 1em;
+      }
+      body.vscode-dark .response-output {
+        background-color: #353535;
+        color: #f0f0f0;
+      }
+      body.vscode-dark .question-detail {
+        background-color: #353535;
+        color: #f0f0f0;
+      }
+      body.vscode-light .response-output {
+        background-color: #f0f0f0;
+        color: dimgray;
+      }
+      body.vscode-light .question-detail {
+        background-color: #f0f0f0;
+        color: dimgray;
+      }
+      h1 {
+        text-align: center;
+        margin-top: 1em;
+      }
+      h2 {
+        margin-top: 1em;
+      }
+      .niceradiogroup {
+        display: flex;
+        align-items: start;
+        margin-top: 0.2em;
+      }
+      .niceradiogroup input {
+        margin-top: 0.3em;
+        margin-right: 0.3em;
+      }
+      .hidden {
+        display: none;
+      }
+      .toggle-button {
+        cursor: pointer;
+      }
+      .nextstep {
+        margin-top: 1em;
+      }
+      body.vscode-dark .infobox {
+        color: #c0c0c0;
+        overflow: hidden;
+        background-color: #004b68;
+        max-height: 0px;
+        margin-left: 1em;
+        padding-left: 0.6em;
+        border: 0px;
+        border: solid 0px #002489;
+        border-radius: 10px;
+        transition: all 0.5s ease-out;
+      }
+      body.vscode-dark .infobox.show {
+        border: solid 1px #002489;
+        border-radius: 10px;
+        padding: 0.6em;
+        max-height: 1200px;
+        transition: max-height 0.5s ease-in;
+      }
+
+      body.vscode-light .infobox {
+        color: #3d3d3d;
+        overflow: hidden;
+        background-color: #dcf5ff;
+        max-height: 0px;
+        margin-left: 1em;
+        padding-left: 0.6em;
+        border: 0px;
+        border: solid 0px #0074d9;
+        border-radius: 10px;
+        transition: all 0.5s ease-out;
+      }
+      body.vscode-light .infobox.show {
+        border: solid 1px #0074d9;
+        border-radius: 10px;
+        padding: 0.6em;
+        max-height: 1200px;
+        transition: max-height 0.5s ease-in;
+      }
+      .myradio {
+        scale: 1.1;
+      }
+
+      .learningobjectives.show {
+        margin: 1em 0em 1em 1em;
+      }
+      .detailbox.show {
+        margin: 1em 0em 1em 1em;
+      }
+      .rating {
+        display: inline-block;
+      }
+      .rating > label {
+        color: #90a0a3;
+        float: right;
+      }
+
+      .rating > label:before {
+        margin: 5px;
+        font-size: 2em;
+        content: '★';
+        display: inline-block;
+      }
+
+      .rating > input {
+        display: none;
+      }
+
+      .rating > input:checked ~ label,
+      .rating:not(:checked) > label:hover,
+      .rating:not(:checked) > label:hover ~ label {
+        color: #f79426;
+      }
+
+      .rating > input:checked + label:hover,
+      .rating > input:checked ~ label:hover,
+      .rating > label:hover ~ input:checked ~ label,
+      .rating > input:checked ~ label:hover ~ label {
+        color: #fece31;
+      }
+      .rating-buttons {
+        margin-top: 1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        column-gap: 1em;
+      }
+    </style>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+      integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.min.js"
+      integrity="sha512-E1dSFxg+wsfJ4HKjutk/WaCzK7S2wv1POn1RRPGh8ZK+ag9l244Vqxji3r6wgz9YBf6+vhQEYJZpSjqWFPg9gg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <h1>Code Mentor AI</h1>
+    <p>
+      This feedback tool is designed to provide feedback to you on how variables
+      are used in your program. Its primary goal is to support your learning
+      journey by highlighting areas for improvement, reinforcing good practices,
+      and helping you build a strong foundation in understanding and using
+      variables in programming.
+    </p>
+    <p>
+      The feedback that is provided is based on the
+      <a
+        href="#"
+        onclick="toggleVisibilityInfoBox(this,'learning-objectives');"
+      >learning goals</a>.
+    </p>
+    <div class="infobox learningobjectives" id="learning-objectives">
+      <ol>
+        <!-- TODO: load this dynamic from the extension-->
+        <li>
+          Understand that variables have an associated datatype and being able
+          to choose the appropriate type from an existing set.
+        </li>
+        <li>
+          Understand and know naming conventions and meaningful/descriptive
+          names are chosen.
+        </li>
+        <li>Understand what scope of variables are and how apply scope.</li>
+        <li>
+          What operations can be applied to variables including assignment.
+        </li>
+        <li>
+          Understand what a variable is, what role it plays and that variables
+          contain a value.
+        </li>
+        <li>
+          Understand what the purpose of variables are and that they are used
+          for data storage.
+        </li>
+        <li>
+          Understand what type conversion is and being able to apply type
+          conversion.
+        </li>
+        <li>
+          Understanding and knowing how to pass variables as arguments and that
+          function results can be assigned to variables.
+        </li>
+        <li>
+          Understand how to use and apply variables in context such as
+          conditions.
+        </li>
+        <li>Understand how to declare and initialize variables.</li>
+      </ol>
+    </div>
+    <br />
+    <div class="rendered-form visible" id="view-interface">
+      <h3>1. Predefined question</h3>
+      <div class="rendered-form">
+        <div class="formbuilder-radio-group form-group field-rg-feedbacktype">
+          <label for="rg-feedbacktype" class="formbuilder-radio-group-label">
+            Select predefined question:
+            <br />
+          </label>
+          <div class="radio-group">
+            <div class="formbuilder-radio niceradiogroup">
+              <input
+                name="rb-feedbacktype"
+                access="false"
+                id="rb-feedbacktype-0"
+                value="outcome"
+                class="form-check-input myradio"
+                type="radio"
+              />
+              <label for="rb-feedbacktype-0">
+                Review my program code against the learning objectives.
+              </label>
+            </div>
+            <div class="formbuilder-radio niceradiogroup">
+              <input
+                name="rb-feedbacktype"
+                access="false"
+                id="rb-feedbacktype-1"
+                value="improve"
+                class="form-check-input myradio"
+                type="radio"
+              />
+              <label for="rb-feedbacktype-1">
+                Review my program code and give suggestions for improvement.
+              </label>
+            </div>
+            <div class="formbuilder-radio niceradiogroup">
+              <input
+                name="rb-feedbacktype"
+                access="false"
+                id="rb-feedbacktype-2"
+                value="understand"
+                class="form-check-input myradio"
+                type="radio"
+              />
+              <label for="rb-feedbacktype-2">
+                Review my program code and ask me questions to test my
+                understanding of the learning objectives.
+              </label>
+            </div>
+          </div>
+        </div>
+        <br />
+        <button id="btn-ask-feedback" class="btn btn-secondary" disabled>
+          Ask predefined question
+        </button>
+      </div>
+
+      <br />
+      <h3>2. Custom question:</h3>
+      <p>
+        You can ask any type of question about variable usage in your program
+        code. For example, you can ask for explanations, hints or suggestions.
+        <i style="font-size: 0.8em;">
+          Note that solutions will not be provided.
+        </i>
+      </p>
+      <div class="rendered-form">
+        <div
+          class="formbuilder-textarea form-group field-textarea-1734187280001"
+        >
+          <label
+            for="textarea-1734187280001"
+            class="formbuilder-textarea-label"
+          ></label>
+          <textarea
+            type="textarea"
+            class="form-control"
+            rows="5"
+            name="ta-custom-question"
+            access="false"
+            id="ta-custom-question"
+          ></textarea>
+        </div>
+        <br />
+        <button id="btn-custom-feedback" class="btn btn-secondary" disabled>
+          Ask custom feedback
+        </button>
+      </div>
+      <br />
+      <h3>3. Annotate code inline</h3>
+      <p>
+        You can ask the system to annotate your code with feedback inline. The
+        system will provide feedback on the code based on teacher knowledge.
+      </p>
+      <button id="btn-annotate" class="btn btn-secondary" disabled>
+        Annotate code
+      </button>
+    </div>
+    <div class="rendered-form hidden" id="view-response">
+      <h3>Question:</h3>
+      <p id="question-detail" class="form-control question-detail"></p>
+      <!-- <button id="btn-review-again" class="btn btn-primary">Review again</button> -->
+      <h2>Answer:</h2>
+      <small><i><span class="positive">Green</span> means goal is met, <span class="negative">orange</span> means goal is not met.</i></small>
+      <div id="busy-indicator"></div>
+      <p class="response-output form-control" id="output-answer"></p>
+    </div>
+    <div class="rendered-form hidden" id="view-rating">
+      <h5>Rate the feedback</h5>
+      <div class="formbuilder-radio-group form-group field-radio-rating">
+        <label for="radio-rating" class="formbuilder-radio-group-label">
+          The feedback I received was useful for me:
+        </label>
+        <div class="radio-group form-check rating">
+          <input
+            class="form-check-input"
+            name="radio-rating"
+            access="false"
+            id="radio-rating-0"
+            value="5"
+            type="radio"
+          />
+          <label class="form-check-label" for="radio-rating-0"></label>
+          <input
+            class="form-check-input"
+            name="radio-rating"
+            access="false"
+            id="radio-rating-1"
+            value="4"
+            type="radio"
+          />
+          <label class="form-check-label" for="radio-rating-1"></label>
+          <input
+            class="form-check-input"
+            name="radio-rating"
+            access="false"
+            id="radio-rating-2"
+            value="3"
+            type="radio"
+          />
+          <label class="form-check-label" for="radio-rating-2"></label>
+          <input
+            class="form-check-input"
+            name="radio-rating"
+            access="false"
+            id="radio-rating-3"
+            value="2"
+            type="radio"
+          />
+          <label class="form-check-label" for="radio-rating-3"></label>
+          <input
+            class="form-check-input"
+            name="radio-rating"
+            access="false"
+            id="radio-rating-4"
+            value="1"
+            type="radio"
+          />
+          <label class="form-check-label" for="radio-rating-4"></label>
+        </div>
+      </div>
+      <textarea
+        type="textarea"
+        class="form-control"
+        rows="3"
+        name="ta-rating-comment"
+        access="false"
+        id="rating-comment"
+        placeholder="Provide additional comments here."></textarea>
+        <div class="rating-buttons">
+          <button id="btn-skip-rating" class="btn btn-danger">Skip</button>
+          <button id="btn-ask-rating" class="btn btn-success">Submit</button>
+        </div>
+      <p id="output-rating"></p>
+    </div>
+
+    <script src="%SCRIPT_URI%"></script>
+  </body>
+</html>
