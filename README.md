@@ -16,7 +16,7 @@ $ vsce package
 
 You should now see `codementor-ai-0.5.1.vsix` in the project folder. You can install this package locally in your extensions. Note: It won't work because no LLM API keys are loaded yet.
 
-Go to `codementiorai.ts` to enter your Claude and GPT-4o API keys.
+Go to `codementorai.ts` to enter your Claude and GPT-4o API keys.
 
 Note: The datadrop API keys are optional and used for logging feedback requests to a private server.
 
@@ -45,7 +45,8 @@ Note: The datadrop API keys are optional and used for logging feedback requests 
 
 There are no further settings
 
-* API keys are stored directly in code to avoid script-kiddies from accessing private API keys. *(Note: they can be found nevertheless. It's better to create a setting where users manually enter the API key)*
+Note:
+* API keys are stored directly in code to avoid copying private API keys directly from the preferences. *(Note that they can be extracted nevertheless. It is better to create a setting where users manually enter the API key, but it was considered to complex to hand out API keys to participants of the study)*
 
 ## Known Issues
 
